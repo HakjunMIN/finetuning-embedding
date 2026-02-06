@@ -1,0 +1,22 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+name: bge-m3-kr-finetune
+experiment_name: bge-m3-kr-finetune
+description: Fine-tune BGE-M3 with synthetic Korean electronics dataset
+code: ../
+command: >-
+  python -m src.train
+  --train_data ${{inputs.train_data}}
+  --output_dir ${{outputs.model_output}}
+  --epochs 1
+  --batch_size 16
+  --lr 2e-5
+  --max_seq_length 256
+inputs:
+  train_data:
+    type: uri_file
+    path: azureml://datastores/workspaceblobstore/paths/datasets/synthetic_electronics.jsonl
+outputs:
+  model_output:
+    type: uri_folder
+environment: AzureML-pytorch-2.1-ubuntu20.04-py310-cpu@latest
+compute: azureml:cpu-cluster

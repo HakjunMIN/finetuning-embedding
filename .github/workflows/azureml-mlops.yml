@@ -1,0 +1,99 @@
+name: Azure ML MLOps
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+env:
+  AZURE_SUBSCRIPTION_ID: e0493f49-bc5c-4207-a643-9b5f6503a36d
+  AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+  AZUREML_WORKSPACE_NAME: ${{ secrets.AZUREML_WORKSPACE_NAME }}
+  AZUREML_COMPUTE_NAME: ${{ secrets.AZUREML_COMPUTE_NAME }}
+
+jobs:
+  train-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install deps (uv)
+        run: uv sync
+
+      - name: Synthesize dataset
+        run: uv run python -m src.synth_data --pairs-per-term 6
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Azure ML extension
+        run: az extension add -n ml -y
+
+      - name: Upload dataset to workspaceblobstore
+        run: >-
+          az ml datastore upload
+          --name workspaceblobstore
+          --path datasets/synthetic_electronics.jsonl
+          --src data/synthetic_electronics.jsonl
+          --resource-group $AZURE_RESOURCE_GROUP
+          --workspace-name $AZUREML_WORKSPACE_NAME
+
+      - name: Submit training job
+        id: submit_job
+        run: |
+          JOB_NAME=$(az ml job create -f azureml/job.yml \
+            --resource-group $AZURE_RESOURCE_GROUP \
+            --workspace-name $AZUREML_WORKSPACE_NAME \
+            --query name -o tsv)
+          echo "job_name=$JOB_NAME" >> $GITHUB_OUTPUT
+          az ml job stream -n $JOB_NAME \
+            --resource-group $AZURE_RESOURCE_GROUP \
+            --workspace-name $AZUREML_WORKSPACE_NAME
+
+      - name: Register model
+        run: >-
+          az ml model create
+          --name bge-m3-kr-embedding-model
+          --path azureml://jobs/${{ steps.submit_job.outputs.job_name }}/outputs/model_output
+          --type custom_model
+          --resource-group $AZURE_RESOURCE_GROUP
+          --workspace-name $AZUREML_WORKSPACE_NAME
+
+      - name: Create or update endpoint
+        run: >-
+          az ml online-endpoint create
+          -f azureml/endpoint.yml
+          --resource-group $AZURE_RESOURCE_GROUP
+          --workspace-name $AZUREML_WORKSPACE_NAME
+          --set auth_mode=key
+
+      - name: Create or update deployment
+        run: >-
+          az ml online-deployment create
+          -f azureml/deployment.yml
+          --resource-group $AZURE_RESOURCE_GROUP
+          --workspace-name $AZUREML_WORKSPACE_NAME
+
+      - name: Set traffic 100% to blue
+        run: >-
+          az ml online-endpoint update
+          --name bge-m3-kr-embeddings
+          --traffic "blue=100"
+          --resource-group $AZURE_RESOURCE_GROUP
+          --workspace-name $AZUREML_WORKSPACE_NAME

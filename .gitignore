@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.venv/
+.env
+.env.*
+.DS_Store
+.ipynb_checkpoints/
+outputs/
+mlruns/
+azureml_logs/

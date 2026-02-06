@@ -1,0 +1,22 @@
+{"acronym":"PWM","full":"펄스 폭 변조","definition":"디지털 신호의 듀티비를 조절해 평균 전력을 제어하는 방식이다."}
+{"acronym":"ADC","full":"아날로그-디지털 변환기","definition":"아날로그 신호를 이산적인 디지털 값으로 변환하는 회로 또는 장치다."}
+{"acronym":"DAC","full":"디지털-아날로그 변환기","definition":"디지털 값을 연속적인 아날로그 전압 또는 전류로 변환한다."}
+{"acronym":"EMI","full":"전자파 간섭","definition":"전자기파가 기기에 영향을 주어 오동작을 유발하는 현상이다."}
+{"acronym":"EMC","full":"전자파 적합성","definition":"전자기 간섭을 허용 범위 내로 유지하는 설계/규격 요건이다."}
+{"acronym":"ESD","full":"정전기 방전","definition":"정전기가 방전되며 회로에 손상을 주거나 노이즈를 유발할 수 있다."}
+{"acronym":"SMPS","full":"스위칭 모드 전원공급장치","definition":"스위칭 소자를 이용해 고효율로 전력을 변환하는 전원장치다."}
+{"acronym":"LDO","full":"저손실 전압 레귤레이터","definition":"입출력 전압 차가 작은 조건에서 안정된 전압을 제공하는 레귤레이터다."}
+{"acronym":"PFC","full":"역률 보정","definition":"전류 파형을 정현파에 가깝게 만들어 역률을 개선하는 기술이다."}
+{"acronym":"RF","full":"무선 주파수","definition":"무선 통신에 사용되는 고주파 전자기파 대역을 의미한다."}
+{"acronym":"PCB","full":"인쇄 회로 기판","definition":"전자 부품을 탑재하고 전기적 연결을 제공하는 기판이다."}
+{"acronym":"BOM","full":"자재 명세서","definition":"제품을 구성하는 부품 목록과 수량을 정리한 문서다."}
+{"acronym":"CAN","full":"컨트롤러 영역 네트워크","definition":"차량 및 산업용 제어에서 사용되는 견고한 통신 버스다."}
+{"acronym":"UART","full":"범용 비동기 송수신기","definition":"비동기 직렬 통신을 수행하는 하드웨어 인터페이스다."}
+{"acronym":"SPI","full":"직렬 주변장치 인터페이스","definition":"마스터-슬레이브 구조의 고속 직렬 통신 프로토콜이다."}
+{"acronym":"I2C","full":"집적회로 간 통신","definition":"2선식 직렬 버스로 다수의 장치를 연결하는 통신 방식이다."}
+{"acronym":"RS-485","full":"차동 직렬 통신 표준","definition":"장거리 통신에 적합한 차동 신호 기반의 직렬 통신 규격이다."}
+{"acronym":"SiC","full":"실리콘 카바이드","definition":"고온·고전압 환경에 유리한 와이드밴드갭 반도체 소재다."}
+{"acronym":"GaN","full":"갈륨 나이트라이드","definition":"고주파·고전력 응용에 적합한 와이드밴드갭 반도체 소재다."}
+{"acronym":"BJT","full":"바이폴라 접합 트랜지스터","definition":"두 개의 pn 접합으로 전류 증폭이나 스위칭을 수행하는 소자다."}
+{"acronym":"MOSFET","full":"금속-산화막-반도체 전계효과 트랜지스터","definition":"게이트 전압으로 채널을 제어하는 전력 스위칭 소자다."}
+{"acronym":"PLL","full":"위상 고정 루프","definition":"출력 위상을 기준 신호에 동기화해 클럭을 안정화하는 회로다."}

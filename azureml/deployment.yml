@@ -1,0 +1,10 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: blue
+endpoint_name: bge-m3-kr-embeddings
+model: azureml:bge-m3-kr-embedding-model@latest
+environment: AzureML-pytorch-2.1-ubuntu20.04-py310-cpu@latest
+instance_type: Standard_DS3_v2
+instance_count: 1
+code_configuration:
+  code: ../
+  scoring_script: src/score.py

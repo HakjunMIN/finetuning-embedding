@@ -1,0 +1,4 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineEndpoint.schema.json
+name: bge-m3-kr-embeddings
+auth_mode: key
+description: Managed online endpoint for BGE-M3 Korean embeddings
