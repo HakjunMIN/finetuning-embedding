@@ -57,7 +57,7 @@ uv run python -m src.synth_data --pairs-per-term 6 --pairs-per-acronym 8
 ```
 
 ### 로컬 훈련(샘플)
-macOS에서는 메모리 제약으로 배치 크기와 시퀀스 길이를 줄여 실행:
+메모리 제약으로 배치 크기와 시퀀스 길이를 줄여 실행:
 ```bash
 uv run python -m src.train --train_data data/train.jsonl --epochs 1 --batch_size 2 --max_seq_length 128 --use_cpu
 ```
