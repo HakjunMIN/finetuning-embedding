@@ -14,9 +14,11 @@ command: >-
 inputs:
   train_data:
     type: uri_file
-    path: azureml://datastores/workspaceblobstore/paths/datasets/synthetic_electronics.jsonl
+    path: ../data/synthetic_electronics.jsonl
 outputs:
   model_output:
     type: uri_folder
 environment: AzureML-pytorch-2.1-ubuntu20.04-py310-cpu@latest
 compute: azureml:cpu-cluster
+identity:
+  type: user_identity
