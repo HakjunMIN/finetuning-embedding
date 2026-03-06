@@ -9,7 +9,7 @@ from typing import List
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Fine-tune BGE-M3 for Korean electronics embeddings")
+    parser = argparse.ArgumentParser(description="Fine-tune BGE-M3 (LoRA) for Korean electronics embeddings")
     parser.add_argument("--train_data", type=Path, required=True)
     parser.add_argument("--model_name", type=str, default="BAAI/bge-m3")
     parser.add_argument("--output_dir", type=Path, default=Path("outputs/bge-m3-kr"))
@@ -17,6 +17,9 @@ def main() -> None:
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--lr", type=float, default=2e-5)
     parser.add_argument("--max_seq_length", type=int, default=128)
+    parser.add_argument("--lora_r", type=int, default=8, help="LoRA rank")
+    parser.add_argument("--lora_alpha", type=int, default=16, help="LoRA alpha")
+    parser.add_argument("--lora_dropout", type=float, default=0.1, help="LoRA dropout")
     parser.add_argument("--use_cpu", action="store_true", help="Force CPU training")
     args = parser.parse_args()
 
@@ -27,6 +30,7 @@ def main() -> None:
     
     # Import torch AFTER setting environment variables
     import torch
+    from peft import LoraConfig, TaskType, get_peft_model
     from sentence_transformers import SentenceTransformer, InputExample, losses
     from torch.utils.data import DataLoader
 
@@ -38,6 +42,23 @@ def main() -> None:
     print(f"Using device: {device}")
     model = SentenceTransformer(args.model_name, device=device)
     model.max_seq_length = args.max_seq_length
+
+    # Apply LoRA to the underlying transformer
+    peft_config = LoraConfig(
+        task_type=TaskType.FEATURE_EXTRACTION,
+        r=args.lora_r,
+        lora_alpha=args.lora_alpha,
+        lora_dropout=args.lora_dropout,
+        target_modules=["query", "value"],
+    )
+    transformer_module = model[0]
+    transformer_module.auto_model = get_peft_model(
+        transformer_module.auto_model, peft_config
+    )
+
+    trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    total = sum(p.numel() for p in model.parameters())
+    print(f"Trainable parameters: {trainable:,} / {total:,} ({100 * trainable / total:.2f}%)")
 
     # Load examples
     examples: List[InputExample] = []
@@ -63,7 +84,11 @@ def main() -> None:
         show_progress_bar=True,
     )
 
-    print(f"Model saved to {args.output_dir}")
+    # Merge LoRA weights into the base model and save
+    transformer_module.auto_model = transformer_module.auto_model.merge_and_unload()
+    model.save(str(args.output_dir))
+
+    print(f"Model (LoRA merged) saved to {args.output_dir}")
 
 
 if __name__ == "__main__":
